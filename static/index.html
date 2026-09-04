@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>スレッド検索</title>
+  <link rel="stylesheet" href="/static/style.css?v=20260904-6">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <h1>スレッド検索</h1>
+    </header>
+
+    <section class="search-panel" aria-label="検索条件">
+      <form id="search-form">
+        <div class="search-row">
+          <input id="q" name="q" type="search" maxlength="200" placeholder="スレタイを検索" autocomplete="off">
+          <button type="submit">検索</button>
+        </div>
+
+        <fieldset class="boards">
+          <legend>対象板</legend>
+          <label><input type="checkbox" name="source" value="eddibb:liveedge" checked> エッヂ</label>
+          <label><input type="checkbox" name="source" value="5ch:poverty" checked> 嫌儲</label>
+          <label><input type="checkbox" name="source" value="5ch:news4vip" checked> VIP</label>
+          <label><input type="checkbox" name="source" value="5ch:livejupiter" checked> なんJ</label>
+          <label><input type="checkbox" name="source" value="5ch:livegalileo" checked> なんG</label>
+        </fieldset>
+
+        <details class="filters">
+          <summary>期間・並び順</summary>
+          <div class="filter-grid">
+            <label>開始日<input id="from" name="from" type="date"></label>
+            <label>終了日<input id="to" name="to" type="date"></label>
+            <label>並び順
+              <select id="sort" name="sort">
+                <option value="new">新しい順</option>
+                <option value="old">古い順</option>
+              </select>
+            </label>
+          </div>
+        </details>
+      </form>
+    </section>
+
+    <section class="results-head" aria-live="polite">
+      <div id="summary">検索条件を入力してください</div>
+      <div id="engine" class="engine"></div>
+    </section>
+
+    <nav class="pager pager-top" aria-label="検索結果ページ（上）" hidden>
+      <div class="page-nav">
+        <button class="page-prev" type="button" aria-label="前のページ">←</button>
+        <label class="page-jump" aria-label="ページ番号">
+          <input class="page-input" type="number" min="1" inputmode="numeric" value="1">
+          <span>/</span>
+          <span class="page-total">1</span>
+        </label>
+        <button class="page-next" type="button" aria-label="次のページ">→</button>
+      </div>
+      <label class="page-size-wrap">
+        <select class="page-size" aria-label="表示件数">
+          <option value="30">30件表示</option>
+          <option value="50">50件表示</option>
+          <option value="100">100件表示</option>
+        </select>
+      </label>
+    </nav>
+
+    <section id="results" class="results"></section>
+
+    <nav class="pager pager-bottom" aria-label="検索結果ページ（下）" hidden>
+      <div class="page-nav">
+        <button class="page-prev" type="button" aria-label="前のページ">←</button>
+        <label class="page-jump" aria-label="ページ番号">
+          <input class="page-input" type="number" min="1" inputmode="numeric" value="1">
+          <span>/</span>
+          <span class="page-total">1</span>
+        </label>
+        <button class="page-next" type="button" aria-label="次のページ">→</button>
+      </div>
+      <label class="page-size-wrap">
+        <select class="page-size" aria-label="表示件数">
+          <option value="30">30件表示</option>
+          <option value="50">50件表示</option>
+          <option value="100">100件表示</option>
+        </select>
+      </label>
+    </nav>
+  </main>
+  <script src="/static/app.js?v=20260904-5" defer></script>
+</body>
+</html>
