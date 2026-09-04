@@ -1,12 +1,11 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import asyncio
 import os
 from pathlib import Path
-from urllib.parse import urlencode
 
 import httpx
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -15,14 +14,14 @@ STATIC = ROOT / "static"
 BBS_API_URL = os.getenv("BBS_API_URL", "http://127.0.0.1:8000").rstrip("/")
 
 SOURCES = {
-    "eddibb:liveedge": {"label": "繧ｨ繝・モ", "network": "eddibb", "board": "liveedge"},
-    "5ch:poverty": {"label": "雖悟┫", "network": "5ch", "board": "poverty"},
+    "eddibb:liveedge": {"label": "エッヂ", "network": "eddibb", "board": "liveedge"},
+    "5ch:poverty": {"label": "嫌儲", "network": "5ch", "board": "poverty"},
     "5ch:news4vip": {"label": "VIP", "network": "5ch", "board": "news4vip"},
-    "5ch:livejupiter": {"label": "縺ｪ繧笛", "network": "5ch", "board": "livejupiter"},
-    "5ch:livegalileo": {"label": "縺ｪ繧敵", "network": "5ch", "board": "livegalileo"},
+    "5ch:livejupiter": {"label": "なんJ", "network": "5ch", "board": "livejupiter"},
+    "5ch:livegalileo": {"label": "なんG", "network": "5ch", "board": "livegalileo"},
 }
 
-app = FastAPI(title="thread-search", version="0.1.0")
+app = FastAPI(title="bbs-thread-search", version="0.1.0")
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
 
@@ -96,13 +95,15 @@ async def recent(source: list[str] = Query(default=[]), limit: int = Query(30, g
             continue
         merged.extend(decorate_thread(item) for item in payload.get("threads", []))
 
-    merged.sort(key=lambda item: (str(item.get("firstSeenAt") or ""), str(item.get("threadId") or "")), reverse=True)
+    merged.sort(
+        key=lambda item: (str(item.get("firstSeenAt") or ""), str(item.get("threadId") or "")),
+        reverse=True,
+    )
     return {"threads": merged[:limit], "sources": selected}
 
 
 @app.get("/api/search")
 async def search(
-    request: Request,
     source: list[str] = Query(default=[]),
     q: str = Query("", max_length=200),
     from_date: str | None = Query(None, alias="from", pattern=r"^\d{4}-\d{2}-\d{2}$"),
@@ -129,10 +130,10 @@ async def search(
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(f"{BBS_API_URL}/api/v1/search/threads", params=params)
     except httpx.HTTPError as exc:
-        raise HTTPException(status_code=502, detail="讀懃ｴ｢API縺ｫ謗･邯壹〒縺阪∪縺帙ｓ") from exc
+        raise HTTPException(status_code=502, detail="検索APIに接続できません") from exc
 
     if not response.is_success:
-        detail = "讀懃ｴ｢API縺ｧ繧ｨ繝ｩ繝ｼ縺檎匱逕溘＠縺ｾ縺励◆"
+        detail = "検索APIでエラーが発生しました"
         try:
             payload = response.json()
             detail = payload.get("detail", detail)
@@ -143,5 +144,3 @@ async def search(
     payload = response.json()
     payload["threads"] = [decorate_thread(item) for item in payload.get("threads", [])]
     return payload
-
-
